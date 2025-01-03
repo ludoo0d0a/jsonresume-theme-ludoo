@@ -11,43 +11,40 @@ function getMonth(startDateStr, locale) {
     const date = new Date(2024, month, 1); 
     const monthText = date.toLocaleString(locale, { month: 'long' });
     return monthText+' '
-    
-    // switch (month) {
-    // case '01':
-    //     return "January ";
-    // case '02':
-    //     return "February ";
-    // case '03':
-    //     return "March ";
-    // case '04':
-    //     return "April ";
-    // case '05':
-    //     return "May ";
-    // case '06':
-    //     return "June ";
-    // case '07':
-    //     return "July ";
-    // case '08':
-    //     return "August ";
-    // case '09':
-    //     return "September ";
-    // case '10':
-    //     return "October ";
-    // case '11':
-    //     return "November ";
-    // case '12':
-    //     return "December ";
-    // }
 }
 
 function render(resumeObject) {
     const DEFAULT_LANG = 'en'
-    const lang = meta.lang || DEFAULT_LANG;
-    const PRESENTS = {'en':'Present', 'fr': "Aujourd'hui"};
-    const PRESENT = PRESENTS[lang] || PRESENTS[DEFAULT_LANG];
+    const lang = (resumeObject.meta && resumeObject.meta.lang) || DEFAULT_LANG;
 
-    const EXPECTEDS = {'en':' (expected)', 'fr': " (attendu)"};
-    const EXPECTED = EXPECTEDS[lang] || EXPECTEDS[DEFAULT_LANG];
+    const allI18ns= {
+        'en': {
+            'present': 'Present',
+            'i18n.expected':' (i18n.expected)',
+            'title':{
+                'about': 'About',
+                'work-experience': 'Work Experience',
+                'volunteer': 'Volunteer',
+                'projects': 'Projects',
+                'references': 'References'
+            }
+            
+        },
+        'fr': {
+            'present': "Aujourd'hui",
+            'i18n.expected': " (attendu)",
+            'title':{
+                'about': 'A propos',
+                'work-experience': 'Expériences',
+                'volunteer': 'Volontariat',
+                'projects': 'Projets',
+                'references': 'Références'
+            }
+        }
+    }
+    const i18n = allI18ns[lang] || allI18ns[DEFAULT_LANG];
+
+    resumeObject.title = i18n.title;
 
     resumeObject.basics.capitalName = resumeObject.basics.name.toUpperCase();
     if(resumeObject.basics && resumeObject.basics.email) {
@@ -123,51 +120,37 @@ function render(resumeObject) {
         }
     });
 
+    function formatSection(w) {
+        if (w.startDate) {
+            w.startDateYear = (w.startDate || "").substr(0, 4);
+            w.startDateMonth = getMonth(w.startDate || "");
+        }
+        if (w.endDate) {
+            w.endDateYear = (w.endDate || "").substr(0, 4);
+            w.endDateMonth = getMonth(w.endDate || "");
+        } else {
+            w.endDateYear = i18n.present
+        }
+        if (w.highlights) {
+            if (w.highlights[0]) {
+                if (w.highlights[0] !== "") {
+                    w.boolHighlights = true;
+                }
+            }
+        }
+    }
+
     if (resumeObject.work && resumeObject.work.length) {
         resumeObject.workBool = true;
         _.each(resumeObject.work, function(w){
-            if (w.startDate) {
-                w.startDateYear = (w.startDate || "").substr(0,4);
-                w.startDateMonth = getMonth(w.startDate || "");
-
-            }
-            if(w.endDate) {
-                w.endDateYear = (w.endDate || "").substr(0,4);
-                w.endDateMonth = getMonth(w.endDate || "");
-            } else {
-                w.endDateYear = PRESENT
-            }
-            if (w.highlights) {
-                if (w.highlights[0]) {
-                    if (w.highlights[0] != "") {
-                        w.boolHighlights = true;
-                    }
-                }
-            }
+            formatSection(w);
         });
     }
 
     if (resumeObject.volunteer && resumeObject.volunteer.length) {
         resumeObject.volunteerBool = true;
         _.each(resumeObject.volunteer, function(w){
-            if (w.startDate) {
-                w.startDateYear = (w.startDate || "").substr(0,4);
-                w.startDateMonth = getMonth(w.startDate || "");
-
-            }
-            if(w.endDate) {
-                w.endDateYear = (w.endDate || "").substr(0,4);
-                w.endDateMonth = getMonth(w.endDate || "");
-            } else {
-                w.endDateYear = PRESENT
-            }
-            if (w.highlights) {
-                if (w.highlights[0]) {
-                    if (w.highlights[0] != "") {
-                        w.boolHighlights = true;
-                    }
-                }
-            }
+            formatSection(w);
         });
     }
 
@@ -197,15 +180,15 @@ function render(resumeObject) {
                     e.endDateMonth = getMonth(e.endDate || "")
 
                     if (e.endDateYear > curyear) {
-                        e.endDateYear += EXPECTED;
+                        e.endDateYear += i18n.expected;
                     }
                 } else {
-                    e.endDateYear = PRESENT
+                    e.endDateYear = i18n.present
                     e.endDateMonth = '';
                 }
                 if (e.courses) {
                     if (e.courses[0]) {
-                        if (e.courses[0] != "") {
+                        if (e.courses[0] !== "") {
                             e.educationCourses = true;
                         }
                     }
@@ -263,11 +246,8 @@ function render(resumeObject) {
     resumeObject.css = fs.readFileSync(__dirname + "/style.css", "utf-8");
     resumeObject.printcss = fs.readFileSync(__dirname + "/print.css", "utf-8");
     var theme = fs.readFileSync(__dirname + '/resume.template', 'utf8');
-    var resumeHTML = Mustache.render(theme, resumeObject);
-
-
-    return resumeHTML;
-};
+    return Mustache.render(theme, resumeObject);
+}
 module.exports = {
     render: render
 }

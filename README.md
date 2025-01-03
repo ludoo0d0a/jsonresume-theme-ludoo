@@ -1,4 +1,8 @@
-# jsonresume-theme-kendall
+# jsonresume-theme-ludoo
+
+forked from jsonresume-theme-kendall
+
+# Original doc
 
 A theme for the [JSONResume](https://github.com/jsonresume/resume-schema) schema, that relies on Bootstrap and FontAwesome, added with some personal flair.
 

@@ -1,6 +1,6 @@
 # jsonresume-theme-ludoo
 
-forked from jsonresume-theme-kendall
+forked from [jsonresume-theme-kendall](https://github.com/LinuxBozo/jsonresume-theme-kendall)
 
 # Original doc
 

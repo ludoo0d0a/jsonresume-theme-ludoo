@@ -6,36 +6,48 @@ var Mustache = require('mustache');
 var d = new Date();
 var curyear = d.getFullYear();
 
-function getMonth(startDateStr) {
-    switch (startDateStr.substr(5,2)) {
-    case '01':
-        return "January ";
-    case '02':
-        return "February ";
-    case '03':
-        return "March ";
-    case '04':
-        return "April ";
-    case '05':
-        return "May ";
-    case '06':
-        return "June ";
-    case '07':
-        return "July ";
-    case '08':
-        return "August ";
-    case '09':
-        return "September ";
-    case '10':
-        return "October ";
-    case '11':
-        return "November ";
-    case '12':
-        return "December ";
-    }
+function getMonth(startDateStr, locale) {
+    const month = startDateStr.substr(5,2)
+    const date = new Date(2024, month, 1); 
+    const monthText = date.toLocaleString(locale, { month: 'long' });
+    return monthText+' '
+    
+    // switch (month) {
+    // case '01':
+    //     return "January ";
+    // case '02':
+    //     return "February ";
+    // case '03':
+    //     return "March ";
+    // case '04':
+    //     return "April ";
+    // case '05':
+    //     return "May ";
+    // case '06':
+    //     return "June ";
+    // case '07':
+    //     return "July ";
+    // case '08':
+    //     return "August ";
+    // case '09':
+    //     return "September ";
+    // case '10':
+    //     return "October ";
+    // case '11':
+    //     return "November ";
+    // case '12':
+    //     return "December ";
+    // }
 }
 
 function render(resumeObject) {
+    const DEFAULT_LANG = 'en'
+    const lang = meta.lang || DEFAULT_LANG;
+    const PRESENTS = {'en':'Present', 'fr': "Aujourd'hui"};
+    const PRESENT = PRESENTS[lang] || PRESENTS[DEFAULT_LANG];
+
+    const EXPECTEDS = {'en':' (expected)', 'fr': " (attendu)"};
+    const EXPECTED = EXPECTEDS[lang] || EXPECTEDS[DEFAULT_LANG];
 
     resumeObject.basics.capitalName = resumeObject.basics.name.toUpperCase();
     if(resumeObject.basics && resumeObject.basics.email) {
@@ -91,6 +103,14 @@ function render(resumeObject) {
             case "keybase":
                 p.iconClass = "fas fa-key";
                 break;
+            case "pdf":
+            case "doc":
+            case "document":
+            case "cv":
+            case "resume":
+                p.iconClass = "fas fa-file-pdf";
+                break;
+                
             default:
                 // try to automatically select the icon based on the name
                 p.iconClass = "fab fa-" + p.network.toLowerCase();
@@ -115,7 +135,7 @@ function render(resumeObject) {
                 w.endDateYear = (w.endDate || "").substr(0,4);
                 w.endDateMonth = getMonth(w.endDate || "");
             } else {
-                w.endDateYear = 'Present'
+                w.endDateYear = PRESENT
             }
             if (w.highlights) {
                 if (w.highlights[0]) {
@@ -139,7 +159,7 @@ function render(resumeObject) {
                 w.endDateYear = (w.endDate || "").substr(0,4);
                 w.endDateMonth = getMonth(w.endDate || "");
             } else {
-                w.endDateYear = 'Present'
+                w.endDateYear = PRESENT
             }
             if (w.highlights) {
                 if (w.highlights[0]) {
@@ -177,10 +197,10 @@ function render(resumeObject) {
                     e.endDateMonth = getMonth(e.endDate || "")
 
                     if (e.endDateYear > curyear) {
-                        e.endDateYear += " (expected)";
+                        e.endDateYear += EXPECTED;
                     }
                 } else {
-                    e.endDateYear = 'Present'
+                    e.endDateYear = PRESENT
                     e.endDateMonth = '';
                 }
                 if (e.courses) {

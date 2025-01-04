@@ -1,6 +1,6 @@
 {
   "name": "jsonresume-theme-ludoo",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A JSON Resume theme built with bootstrap",
   "main": "index.js",
   "scripts": {

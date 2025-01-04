@@ -2,6 +2,13 @@
 
 forked from [jsonresume-theme-kendall](https://github.com/LinuxBozo/jsonresume-theme-kendall)
 
+## Extra features
+
+- Internationalization
+- Compact
+- Links
+- Libraries updated
+
 ## Prerequisites
 
 - [node.js](https://nodejs.org/en/) runtime with [resume-cli](https://github.com/jsonresume/resume-cli/)

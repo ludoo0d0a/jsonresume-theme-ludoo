@@ -1,7 +1,7 @@
-var fs = require('fs');
-var gravatar = require('gravatar');
-var Mustache = require('mustache');
-var emojiFlags = require('emoji-flags');
+const fs = require('fs');
+const gravatar = require('gravatar');
+const Mustache = require('mustache');
+const emojiFlags = require('emoji-flags');
 
 const DEFAULT_LOCALE = 'en-US'
 const allI18ns= {
@@ -265,13 +265,7 @@ function render(resumeObject) {
     return Mustache.render(theme, resumeObject);
 }
 
-function test(lang){
-    var resume = JSON.parse(fs.readFileSync(__dirname + `/resume.${lang}.json`, 'utf8'));
-    var html = render(resume);
-    fs.writeFileSync(__dirname + `/public/resume.${lang}.html`, html);
-}
-test('fr')
-test('en')
+
 
 module.exports = {
     render: render

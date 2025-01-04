@@ -1,39 +1,36 @@
 var fs = require('fs');
 var gravatar = require('gravatar');
 var Mustache = require('mustache');
+const DEFAULT_LOCALE = 'en-US'
+const allI18ns= {
+    'en-US': {
+        'present': 'Present',
+        'i18n.expected':' (i18n.expected)',
+        'title':{
+            'about': 'About',
+            'work-experience': 'Work Experience',
+            'volunteer': 'Volunteer',
+            'projects': 'Projects',
+            'references': 'References'
+        }
 
-function render(resumeObject) {
-    const DEFAULT_LANG = 'en'
-    const lang = (resumeObject.meta && resumeObject.meta.lang) || DEFAULT_LANG;
-    // get locale from language
-    const locale = lang; //(lang === 'fr') ? 'fr-FR' : 'en-US';
-
-    const allI18ns= {
-        'en': {
-            'present': 'Present',
-            'i18n.expected':' (i18n.expected)',
-            'title':{
-                'about': 'About',
-                'work-experience': 'Work Experience',
-                'volunteer': 'Volunteer',
-                'projects': 'Projects',
-                'references': 'References'
-            }
-            
-        },
-        'fr': {
-            'present': "Aujourd'hui",
-            'i18n.expected': " (attendu)",
-            'title':{
-                'about': 'A propos',
-                'work-experience': 'Expériences',
-                'volunteer': 'Volontariat',
-                'projects': 'Projets',
-                'references': 'Références'
-            }
+    },
+    'fr-FR': {
+        'present': "Aujourd'hui",
+        'i18n.expected': " (attendu)",
+        'title':{
+            'about': 'A propos',
+            'work-experience': 'Expériences',
+            'volunteer': 'Volontariat',
+            'projects': 'Projets',
+            'references': 'Références'
         }
     }
-    const i18n = allI18ns[lang] || allI18ns[DEFAULT_LANG];
+}
+
+function render(resumeObject) {
+    const locale = (resumeObject.meta && resumeObject.meta.locale) || DEFAULT_LOCALE;
+    const i18n = allI18ns[locale] || allI18ns[DEFAULT_LOCALE];
 
     function applyDate(date, a) {
         const d = parseDate(date)

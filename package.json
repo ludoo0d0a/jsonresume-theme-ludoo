@@ -1,21 +1,20 @@
 {
-  "name": "jsonresume-theme-kendall",
+  "name": "jsonresume-theme-ludoo",
   "version": "0.2.0",
   "description": "A JSON Resume theme built with bootstrap",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "M. Adam Kendall",
+  "author": "Ludovic Valente",
   "license": "MIT",
   "dependencies": {
-    "gravatar": "^1.0.6",
-    "lodash": "^4.17.20",
-    "mustache": "^2.2.1"
+    "gravatar": "^1.8.2",
+    "mustache": "^4.2.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/linuxbozo/jsonresume-theme-kendall.git"
+    "url": "https://github.com/ludoo0d0a/jsonresume-theme-ludoo.git"
   },
   "keywords": [
     "json",
@@ -23,7 +22,7 @@
     "theme"
   ],
   "bugs": {
-    "url": "https://github.com/linuxbozo/jsonresume-theme-kendall/issues"
+    "url": "https://github.com/ludoo0d0a/jsonresume-theme-ludoo/issues"
   },
-  "homepage": "https://github.com/linuxbozo/jsonresume-theme-kendall"
+  "homepage": "https://github.com/ludoo0d0a/jsonresume-theme-ludoo"
 }

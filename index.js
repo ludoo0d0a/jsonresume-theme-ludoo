@@ -1,29 +1,49 @@
 var fs = require('fs');
 var gravatar = require('gravatar');
 var Mustache = require('mustache');
+var emojiFlags = require('emoji-flags');
+
 const DEFAULT_LOCALE = 'en-US'
 const allI18ns= {
     'en-US': {
-        'present': 'Present',
-        'i18n.expected':' (i18n.expected)',
-        'title':{
-            'about': 'About',
-            'work-experience': 'Work Experience',
-            'volunteer': 'Volunteer',
-            'projects': 'Projects',
-            'references': 'References'
+        present: 'Present',
+        expected: ' (i18n.expected)',
+        titles:{
+            maintitle: `Resume of `,
+            contact: 'Contact',
+            about: 'About',
+            work: 'Work Experience',
+            volunteer: 'Volunteer',
+            projects: 'Projects',
+            highlights: 'Highlights',
+            awards: 'Awards',
+            education: 'Education',
+            skills: 'skills',
+            publications: 'Publications',
+            languages: 'Languages',
+            interests: 'Interests',
+            references: 'References'
         }
 
     },
     'fr-FR': {
-        'present': "Aujourd'hui",
-        'i18n.expected': " (attendu)",
-        'title':{
-            'about': 'A propos',
-            'work-experience': 'Expériences',
-            'volunteer': 'Volontariat',
-            'projects': 'Projets',
-            'references': 'Références'
+        present: "Aujourd'hui",
+        expected: " (attendu)",
+        titles:{
+            maintitle: `CV de `,
+            about: 'A propos',
+            contact: 'Contact',
+            work: 'Expériences',
+            volunteer: 'Volontariat',
+            projects: 'Projets',
+            highlights: 'Résumé',
+            awards: 'Récompenses',
+            education: 'Ecoles',
+            skills: 'Compétences',
+            publications: 'Publications',
+            languages: 'Langues',
+            interests: "Centre d'intérêts",
+            references: 'Références'
         }
     }
 }
@@ -32,30 +52,72 @@ function render(resumeObject) {
     const locale = (resumeObject.meta && resumeObject.meta.locale) || DEFAULT_LOCALE;
     const i18n = allI18ns[locale] || allI18ns[DEFAULT_LOCALE];
 
-    function applyDate(date, a) {
-        const d = parseDate(date)
-        a.year = d.year
-        a.day = d.day
-        a.month = d.monthText
+    const dateTranslate = (translate) => {
+        return new Intl.DisplayNames(locale, { type: 'dateTimeField' }).of(translate);
     }
 
-    function parseDate(dateText) {
-        const date = new Date(dateText);
-        const year = date.getFullYear();
-        const month = date.getMonth();
-        const day = date.getDate();
-        const monthText = date.toLocaleString(locale, { month: 'long' });
+    function formatDuration(startDate, endDate) {
+        if (!startDate)
+            return '';
 
-        return {date,year, day, monthText, month };
+        const start = parseDate(startDate);
+        const end = endDate ? parseDate(endDate) : new Date();
+
+        // Get difference in milliseconds
+        const diffMs = end - start;
+
+        // Convert to years and months
+        const years = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 365));
+        const months = Math.floor((diffMs % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24 * 30));
+        const parts = [];
+        if (years > 0) {
+            parts.push(years+' '+dateTranslate('year')+((years>1)?'s':''));
+        }
+        if (months > 0) {
+            parts.push(months+' '+dateTranslate('month')+((months>1)?'s':''));
+        }
+        return parts.join(', ');
+    }
+
+    function parseDateYear(dateText) {
+        if (!dateText)
+            return '';
+        const d = parseDate(dateText);
+        return d.getFullYear();
+    }
+    function parseDate(dateText) {
+        return new Date(dateText);
+    }
+
+    function formatDateDMY(dateText){
+        return parseFormatDate(dateText, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+
+    function formatDate(dateText) {
+        return parseFormatDate(dateText, {
+            year: 'numeric',
+            month: 'long'
+        });
+    }
+
+    function parseFormatDate(dateText, options) {
+        const d = parseDate(dateText)
+        return new Intl.DateTimeFormat(locale, options).format(d);
     }
 
     function isFirst(r, name) {
-        return !!(r && r.length && (name ? r[name] : r))
+        return !!(r && r.length && (name ? r[0][name] : r))
     }
 
-    resumeObject.title = i18n.title;
+    //all titles for i18n
+    resumeObject.titles = i18n.titles;
 
     resumeObject.basics.capitalName = resumeObject.basics.name.toUpperCase();
+
     if(resumeObject.basics && resumeObject.basics.email) {
         resumeObject.basics.gravatar = gravatar.url(resumeObject.basics.email, {
                         s: '200',
@@ -67,78 +129,89 @@ function render(resumeObject) {
         resumeObject.photo = resumeObject.basics.image ? resumeObject.basics.image : resumeObject.basics.gravatar;
     }
 
-    resumeObject.basics.profiles.forEach(p => {
-        switch(p.network.toLowerCase()) {
+    var profiles = [...resumeObject.basics.profiles];
+
+    profiles.forEach(p => {
+        const icons = p.network.toLowerCase().split('::')
+        const icon = icons[0]
+        var text = (icons.length > 1) ? icons[icons.length-1] : ''
+        var iconClass = ''
+
+        switch (icon) {
             // special cases
             case "google-plus":
             case "googleplus":
-                p.iconClass = "fab fa-google-plus";
+                iconClass = "fab fa-google-plus";
                 break;
             case "flickr":
             case "flicker":
-                p.iconClass = "fab fa-flickr";
+                iconClass = "fab fa-flickr";
                 break;
             case "dribbble":
             case "dribble":
-                p.iconClass = "fab fa-dribbble";
+                iconClass = "fab fa-dribbble";
                 break;
             case "codepen":
-                p.iconClass = "fab fa-codepen";
+                iconClass = "fab fa-codepen";
                 break;
             case "soundcloud":
-                p.iconClass = "fab fa-soundcloud";
+                iconClass = "fab fa-soundcloud";
                 break;
             case "reddit":
-                p.iconClass = "fab fa-reddit";
+                iconClass = "fab fa-reddit";
                 break;
             case "tumblr":
             case "tumbler":
-                p.iconClass = "fab fa-tumblr";
+                iconClass = "fab fa-tumblr";
                 break;
             case "stack-overflow":
             case "stackoverflow":
-                p.iconClass = "fab fa-stack-overflow";
+                iconClass = "fab fa-stack-overflow";
                 break;
             case "blog":
             case "rss":
-                p.iconClass = "fas fa-rss";
+                iconClass = "fas fa-rss";
                 break;
             case "gitlab":
-                p.iconClass = "fab fa-gitlab";
+                iconClass = "fab fa-gitlab";
                 break;
             case "keybase":
-                p.iconClass = "fas fa-key";
+                iconClass = "fas fa-key";
                 break;
             case "pdf":
             case "doc":
             case "document":
             case "cv":
             case "resume":
-                p.iconClass = "fas fa-file-pdf";
+                iconClass = "fas fa-file-pdf";
+                text = p.username
+                p.link = true;
                 break;
-                
+            case "flag":
+                const lang = (icons.length > 1) ? icons[1] : ''
+                iconClass = 'fa fa-flag' + (lang ? ` fa-flag-${lang}` : '');
+                text = p.username + ' ' + emojiFlags.countryCode(lang).emoji;
+                p.link = true;
+                break;
             default:
                 // try to automatically select the icon based on the name
-                p.iconClass = `fab fa-${p.network.toLowerCase()}`;
+                iconClass = `fab fa-${p.network.toLowerCase()}`;
         }
 
-        p.text = (p.url) ? p.url :  `${p.network}: ${p.username}`;
+        //p.text = (p.url) ? p.url : `${p.network}: ${p.username}`;
+        p.text = text || p.network
+        p.iconClass  = iconClass
     });
+
+    resumeObject.basics.profiles = profiles.filter(p => !p.link);
+    resumeObject.basics.links = profiles.filter(p => p.link);
 
     function formatSection(w) {
         if (w.startDate) {
-            const ds = parseDate(w.startDate)
-            w.startDateYear = ds.year
-            w.startDateMonth = ds.monthText
+            w.startDateText = formatDate(w.startDate)
         }
-        if (w.endDate) {
-            const de = parseDate(w.endDate)
-            w.endDateYear = de.year
-            w.endDateMonth = de.monthText
-        } else {
-            w.endDateYear = i18n.present
-            w.endDateMonth = '';
-        }
+        w.endDateText = (w.endDate) ? formatDate(w.endDate) :  i18n.present
+        w.duration = formatDuration(w.startDate, w.endDate)
         w.boolHighlights = isFirst(w.highlights)
     }
 
@@ -161,20 +234,23 @@ function render(resumeObject) {
             formatSection(e);
             e.educationDetail = [e.area, e.studyType].filter(Boolean).join(', ');
             e.educationCourses = isFirst(e.courses)
+            const startYear = parseDateYear(e.startDate)
+            const endYear = parseDateYear(e.endDate)
+            e.dateText = `${startYear} ${endYear}`
         });
     }
 
     if (isFirst(resumeObject.awards , 'title')) {
         resumeObject.awardsBool = true;
         resumeObject.awards.forEach(a => {
-            applyDate(a.date, a)
+            a.dateText = formatDate(a.date)
         });
     }
 
     if (isFirst(resumeObject.publications , 'name')) {
         resumeObject.publicationsBool = true;
         resumeObject.publications.forEach(p => {
-            applyDate(p.releaseDate, p)
+            p.dateText = formatDateDMY(p.releaseDate)
         });
     }
 
@@ -188,6 +264,15 @@ function render(resumeObject) {
     var theme = fs.readFileSync(__dirname + '/resume.template', 'utf8');
     return Mustache.render(theme, resumeObject);
 }
+
+function test(lang){
+    var resume = JSON.parse(fs.readFileSync(__dirname + `/resume.${lang}.json`, 'utf8'));
+    var html = render(resume);
+    fs.writeFileSync(__dirname + `/public/resume.${lang}.html`, html);
+}
+test('fr')
+test('en')
+
 module.exports = {
     render: render
 }

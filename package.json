@@ -4,11 +4,16 @@
   "description": "A JSON Resume theme built with bootstrap",
   "main": "index.js",
   "scripts": {
+    "create-html": "resume export public/resume.fr.html --format html --theme . --resume resume.fr.json",
+    "create-pdf": "resume export public/resume.fr.pdf --format pdf --theme . --resume resume.fr.json",
+    "create-all": "npm run create-html && npm run create-pdf",
+    "validate": "resume test",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Ludovic Valente",
   "license": "MIT",
   "dependencies": {
+    "emoji-flags": "^1.3.0",
     "gravatar": "^1.8.2",
     "mustache": "^4.2.0"
   },

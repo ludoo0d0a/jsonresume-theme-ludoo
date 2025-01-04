@@ -1,5 +1,5 @@
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800);
 @charset "utf-8";
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800);
 @-webkit-viewport   { width: device-width; }
 @-moz-viewport      { width: device-width; }
 @-ms-viewport       { width: device-width; }
@@ -7,7 +7,7 @@
 @viewport           { width: device-width; }
 
 body{
-  font-family: 'Open Sans', Arial, Tahoma;
+  font-family: 'Open Sans', Arial, Tahoma, serif;
   font-weight: 400;
   color: #363636;
   background: #334960;
@@ -187,6 +187,9 @@ blockquote {
 .job .highlights{
   padding: 5px 0;
   font-weight: bold;
+}
+.job .highlight-skills{
+  padding: 5px 0;
 }
 .job .job-details {
   padding-left: 5%;

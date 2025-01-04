@@ -2,6 +2,26 @@
 
 forked from [jsonresume-theme-kendall](https://github.com/LinuxBozo/jsonresume-theme-kendall)
 
+## Prerequisites
+
+- [node.js](https://nodejs.org/en/) runtime with [resume-cli](https://github.com/jsonresume/resume-cli/)
+
+```bash
+npm install -g resume-cli
+```
+
+## Export resume
+
+- Create your [resume.json](https://jsonresume.org/schema/) file (you can start by editing [this](/resume.json))
+
+```bash
+npm install jsonresume-theme-ludoo
+
+resume export resume.pdf --format pdf --theme actual
+resume export resume.html --format html --theme actual
+```
+
+
 # Original doc
 
 A theme for the [JSONResume](https://github.com/jsonresume/resume-schema) schema, that relies on Bootstrap and FontAwesome, added with some personal flair.

@@ -142,10 +142,24 @@ function render(resumeObject) {
 
     var profiles = [...resumeObject.basics.profiles];
 
+    function emoji(country) {
+        try {
+            const cc = emojiFlags.countryCode(country)
+            if (!cc)
+                throw new Error(`No emoji for [${country}] ; be careful it should be country, not lang => us, not en` )
+            return cc.emoji
+        } catch (e) {
+            console.error(e);
+            return "";
+        }
+    }
+
     profiles.forEach(p => {
         const icons = p.network.toLowerCase().split('::')
         const icon = icons[0]
-        var text = (icons.length > 1) ? icons[icons.length-1] : ''
+        const lang = (icons.length > 1) ? icons[1] : ''
+
+        var text = ''
         var iconClass = ''
 
         switch (icon) {
@@ -198,13 +212,14 @@ function render(resumeObject) {
                 text = p.username
                 p.type = 'link';
                 break;
-            case "lang":
-                text = p.username
+            case "translation":
+                text = emoji(lang)
+                p.arialabel = p.username
                 p.type = 'translations';
                 break;
             default:
                 // try to automatically select the icon based on the name
-                iconClass = `fab fa-${p.network.toLowerCase()}`;
+                iconClass = `fab fa-${icon}`;
         }
 
         p.text = text || p.network

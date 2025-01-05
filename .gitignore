@@ -3,4 +3,5 @@ npm-debug.log
 resume.*.json
 public/resume.*
 public/index.*
+public/index-*
 .idea

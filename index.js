@@ -4,6 +4,7 @@ const Mustache = require('mustache');
 const emojiFlags = require('emoji-flags');
 
 const DEFAULT_LOCALE = 'en-US'
+const DEFAULT_LANGS = ['en']
 const allI18ns= {
     'en-US': {
         present: 'Present',
@@ -51,6 +52,7 @@ const allI18ns= {
 
 function render(resumeObject) {
     const locale = (resumeObject.meta && resumeObject.meta.locale) || DEFAULT_LOCALE;
+    const langs = (resumeObject.meta && resumeObject.meta.languages && resumeObject.meta.languages.split(',')) || DEFAULT_LANGS;
     const i18n = allI18ns[locale] || allI18ns[DEFAULT_LOCALE];
 
     function plural(items, name) {
@@ -119,7 +121,7 @@ function render(resumeObject) {
     }
 
     function isFirst(r, name) {
-        return !!(r && r.length && (name ? r[0][name] : r))
+        return !!(r && r.length && (name ? r[0][name] : r[0]))
     }
 
     //all titles for i18n
@@ -194,26 +196,26 @@ function render(resumeObject) {
             case "resume":
                 iconClass = "fas fa-file-pdf";
                 text = p.username
-                p.link = true;
+                p.type = 'link';
                 break;
-            case "flag":
-                const lang = (icons.length > 1) ? icons[1] : ''
-                iconClass = 'fa fa-flag' + (lang ? ` fa-flag-${lang}` : '');
-                text = p.username + ' ' + emojiFlags.countryCode(lang).emoji;
-                p.link = true;
+            case "lang":
+                text = p.username
+                p.type = 'translations';
                 break;
             default:
                 // try to automatically select the icon based on the name
                 iconClass = `fab fa-${p.network.toLowerCase()}`;
         }
 
-        //p.text = (p.url) ? p.url : `${p.network}: ${p.username}`;
         p.text = text || p.network
         p.iconClass  = iconClass
     });
 
-    resumeObject.basics.profiles = profiles.filter(p => !p.link);
-    resumeObject.basics.links = profiles.filter(p => p.link);
+    resumeObject.basics.profiles = profiles.filter(p => !p.type);
+    resumeObject.basics.links = profiles.filter(p => p.type==='link');
+    resumeObject.basics.translations = profiles.filter(p => p.type==='translations');
+
+    resumeObject.basics.translationsBool = isFirst(resumeObject.basics.translations)
 
     function formatSection(w) {
         if (w.startDate) {

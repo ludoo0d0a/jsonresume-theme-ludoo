@@ -205,6 +205,17 @@
               <div class="title only pull-right"><a href="{{url}}" target="_blank">{{text}}</a></div>
             </div>
             {{/basics.links}}
+
+            {{#basics.translationsBool}}
+            <div class="contact-item translations">
+              <div class="icon pull-left text-center"><span class="fa fa-language fa-fw"></span></div>
+              <div class="title only pull-right">
+                {{#basics.translations}}
+                <a href="{{url}}" target="_blank">{{text}}</a>
+                {{/basics.translations}}
+              </div>
+            </div>
+            {{/basics.translations}}
           </div>
           {{#educationBool}}
           <!-- EDUCATION -->
@@ -309,7 +320,7 @@
               <div class="item-interests">
                   {{name}}
               </div>
-              <div class="col-sm-offset-1 col-sm-12 clearfix">
+              <div class="col-sm-12 clearfix">
                 {{#keywords}}
                 <span class= "interest badge">{{{.}}}</span>
                 {{/keywords}}

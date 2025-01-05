@@ -48,12 +48,21 @@ const allI18ns= {
     }
 }
 
+
 function render(resumeObject) {
     const locale = (resumeObject.meta && resumeObject.meta.locale) || DEFAULT_LOCALE;
     const i18n = allI18ns[locale] || allI18ns[DEFAULT_LOCALE];
 
-    const dateTranslate = (translate) => {
-        return new Intl.DisplayNames(locale, { type: 'dateTimeField' }).of(translate);
+    function plural(items, name) {
+        let text = dateTranslate(name)
+        if (items>1 && !text.endsWith('s')) {
+            text +='s'
+        }
+        return items + ' ' + text;
+    }
+
+    const dateTranslate = (name) => {
+        return new Intl.DisplayNames(locale, { type: 'dateTimeField' }).of(name);
     }
 
     function formatDuration(startDate, endDate) {
@@ -71,10 +80,10 @@ function render(resumeObject) {
         const months = Math.floor((diffMs % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24 * 30));
         const parts = [];
         if (years > 0) {
-            parts.push(years+' '+dateTranslate('year')+((years>1)?'s':''));
+            parts.push(plural(years, 'year'));
         }
         if (months > 0) {
-            parts.push(months+' '+dateTranslate('month')+((months>1)?'s':''));
+            parts.push(plural(months, 'month'));
         }
         return parts.join(', ');
     }

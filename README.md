@@ -9,6 +9,10 @@ forked from [jsonresume-theme-kendall](https://github.com/LinuxBozo/jsonresume-t
 - Links
 - Libraries updated
 
+## Integration
+
+Used with the [resume](https://github.com/ludoo0d0a/resume) project, you can automatically generate HTML and PDF versions, hosted on github pages.
+
 ## Prerequisites
 
 - [node.js](https://nodejs.org/en/) runtime with [resume-cli](https://github.com/jsonresume/resume-cli/)

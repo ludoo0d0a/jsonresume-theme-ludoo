@@ -4,7 +4,7 @@ const Mustache = require('mustache');
 const emojiFlags = require('emoji-flags');
 
 const DEFAULT_LOCALE = 'en-US'
-const DEFAULT_LANGS = ['en']
+const DEFAULT_LANG = 'en'
 const allI18ns= {
     'en-US': {
         present: 'Present',
@@ -52,7 +52,8 @@ const allI18ns= {
 
 function render(resumeObject) {
     const locale = (resumeObject.meta && resumeObject.meta.locale) || DEFAULT_LOCALE;
-    const langs = (resumeObject.meta && resumeObject.meta.languages && resumeObject.meta.languages.split(',')) || DEFAULT_LANGS;
+    const lang = locale.split('-')[0] || DEFAULT_LANG;
+    resumeObject.lang = lang;
     const i18n = allI18ns[locale] || allI18ns[DEFAULT_LOCALE];
 
     function plural(items, name) {
@@ -157,7 +158,7 @@ function render(resumeObject) {
     profiles.forEach(p => {
         const icons = p.network.toLowerCase().split('::')
         const icon = icons[0]
-        const lang = (icons.length > 1) ? icons[1] : ''
+        const plang = (icons.length > 1) ? icons[1] : ''
 
         var text = ''
         var iconClass = ''
@@ -213,7 +214,7 @@ function render(resumeObject) {
                 p.type = 'link';
                 break;
             case "translation":
-                text = emoji(lang)
+                text = emoji(plang)
                 p.arialabel = p.username
                 p.type = 'translations';
                 break;

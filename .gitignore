@@ -2,4 +2,5 @@ node_modules
 npm-debug.log
 resume.*.json
 public/resume.*
+public/index.*
 .idea
